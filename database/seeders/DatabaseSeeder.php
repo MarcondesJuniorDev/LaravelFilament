@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Department;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Factories\DetailsFactory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->attachPermissionsToRoles();
         $this->attachRolesToUsers();
 
+        Department::factory()->count(50)->create();
     }
 
     private function createRoles(): void
@@ -45,6 +48,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'View Permission', 'slug' => 'view-permission']);
         Permission::create(['name' => 'Edit Permission', 'slug' => 'edit-permission']);
         Permission::create(['name' => 'Delete Permission', 'slug' => 'delete-permission']);
+
     }
 
     private function createUsers(): void
@@ -57,6 +61,8 @@ class DatabaseSeeder extends Seeder
         ];
         foreach ($users as $userData) {
             $user = User::create($userData);
+            $user->details()->create(DetailsFactory::new()->definition());
+            sleep(1);
         }
     }
 
