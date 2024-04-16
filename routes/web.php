@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Site\Home;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Route;
 
 //Route::get('/', function () {
@@ -8,3 +9,8 @@ use Illuminate\Support\Facades\Route;
 //});
 
 Route::get('/', Home::class)->name('home');
+
+Route::get('/principal', function () {
+    return redirect()->to('/admin');
+})->name('admin');
+
