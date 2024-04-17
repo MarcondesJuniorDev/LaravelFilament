@@ -1,7 +1,6 @@
 <?php
 
-use App\Livewire\Site\Home;
-use Filament\Facades\Filament;
+use App\Livewire\Site\Principal\Home;
 use Illuminate\Support\Facades\Route;
 
 //Route::get('/', function () {

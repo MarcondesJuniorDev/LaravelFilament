@@ -1,9 +1,9 @@
 <div>
     <div class="w-full">
-        @livewire('site.partials.banners')
-        @livewire('site.partials.awards')
-        @livewire('site.partials.numbers')
-        @livewire('site.partials.news')
-        @livewire('site.partials.projects')
+        @livewire('site.principal.partials.banners')
+        @livewire('site.principal.partials.awards')
+        @livewire('site.principal.partials.numbers')
+        @livewire('site.principal.partials.news')
+        @livewire('site.principal.partials.projects')
     </div>
 </div>
