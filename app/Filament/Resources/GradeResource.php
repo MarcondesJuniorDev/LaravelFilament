@@ -3,12 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\GradeResource\Pages;
-use App\Filament\Resources\GradeResource\RelationManagers;
 use App\Models\Grade;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -36,6 +38,7 @@ class GradeResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('author_id')
+                    ->default(fn() => auth()->id())
                     ->relationship('author', 'name')
                     ->required(),
                 Forms\Components\Select::make('course_id')
@@ -44,11 +47,17 @@ class GradeResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('status')
+                Select::make('status')
+                    ->options([
+                        'PUBLICADO' => 'Publicado',
+                        'RASCUNHO' => 'Rascunho',
+                        'PENDENTE' => 'Pendente',
+                    ])
                     ->required(),
+                RichEditor::make('description')
+                    ->label('Descrição')
+                    ->maxLength(255)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -56,15 +65,27 @@ class GradeResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Título')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('author.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('course.title')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('title')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (Grade $grade) => match ($grade->status) {
+                        'PUBLICADO' => 'success',
+                        'RASCUNHO' => 'warning',
+                        'PENDENTE' => 'danger',
+                    })
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

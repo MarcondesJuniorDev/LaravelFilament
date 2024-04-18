@@ -6,6 +6,7 @@ use App\Filament\Resources\LessonContentResource\Pages;
 use App\Filament\Resources\LessonContentResource\RelationManagers;
 use App\Models\LessonContent;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -36,24 +37,40 @@ class LessonContentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('lesson_id')
+                    ->label('Aula')
                     ->relationship('lesson', 'title')
                     ->required(),
                 Forms\Components\TextInput::make('title')
+                    ->label('Título')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
+                    ->label('Descrição')
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_main')
+                    ->label('Principal ?')
                     ->required(),
                 Forms\Components\Toggle::make('is_file')
+                    ->label('Arquivo ?')
                     ->required(),
-                Forms\Components\TextInput::make('content_type')
-                    ->required()
-                    ->maxLength(255),
+                Select::make('content_type')
+                    ->label('Tipo de Conteúdo')
+                    ->options([
+                        'youtube' => 'Youtube',
+                        'url' => 'URL',
+                        'mp4' => 'Vídeo MP4',
+                        'pdf' => 'PDF',
+                        'doc' => 'DOC/DOCX',
+                        'ppt' => 'PPT/PPTX',
+                        'xls' => 'XLS/XLSX',
+                        'cartela' => 'Cartela',
+                    ])
+                    ->required(),
                 Forms\Components\TextInput::make('content_path')
-                    ->required()
-                    ->maxLength(255),
+                    ->label('Conteúdo')
+                    ->rules(['required', 'url'])
+                    ->hiddenOn(['content_type' => 'youtube']),
             ]);
     }
 

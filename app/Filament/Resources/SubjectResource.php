@@ -39,6 +39,7 @@ class SubjectResource extends Resource
         return $form
             ->schema([
                 Select::make('author_id')
+                    ->default(fn () => auth()->id())
                     ->label('Autor')
                     ->relationship('author', 'name')
                     ->required(),

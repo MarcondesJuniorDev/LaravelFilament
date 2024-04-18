@@ -95,10 +95,10 @@ class CourseResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('image')
-                    ->label('Capa')
-                    ->rounded(),
+                    ->label('Capa'),
                 TextColumn::make('title')
                     ->label('Título')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('slug')
                     ->label('Slug')

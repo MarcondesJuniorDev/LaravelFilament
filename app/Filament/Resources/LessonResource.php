@@ -5,17 +5,28 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LessonResource\Pages;
 use App\Filament\Resources\LessonResource\RelationManagers;
 use App\Models\Lesson;
+use Filament\Actions\ExportAction;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LessonResource extends Resource
 {
-
     protected static ?string $modelLabel = 'Aula';
 
     protected static ?string $pluralModelLabel = 'Aulas';
@@ -36,33 +47,50 @@ class LessonResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\FileUpload::make('image')
+                FileUpload::make('image')
+                    ->label('Capa')
+                    ->columnSpanFull()
                     ->image(),
-                Forms\Components\TextInput::make('code')
+                TextInput::make('code')
+                    ->label('Código Único')
                     ->required()
+                    ->unique()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('title')
+                TextInput::make('title')
+                    ->label('Título')
                     ->required()
+                    ->unique()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
+                TextInput::make('slug')
+                    ->default(fn () => \Illuminate\Support\Str::slug(request('title')))
                     ->required()
+                    ->unique()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                RichEditor::make('description')
+                    ->label('Descrição')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('status')
+                Select::make('status')
+                    ->options([
+                        'PUBLICADO' => 'Publicado',
+                        'RASCUNHO' => 'Rascunho',
+                        'PENDENTE' => 'Pendente',
+                    ])
                     ->required(),
-                Forms\Components\TextInput::make('tags')
+                TextInput::make('tags')
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('lesson_date'),
-                Forms\Components\TextInput::make('author_id')
+                DatePicker::make('lesson_date'),
+                TextInput::make('author_id')
+                    ->default(fn() => auth()->id())
                     ->required()
                     ->numeric(),
-                Forms\Components\Select::make('grade_id')
+                Select::make('grade_id')
+                    ->label('Série')
                     ->relationship('grade', 'title')
                     ->required(),
-                Forms\Components\Select::make('year_id')
-                    ->relationship('year', 'id')
+                Select::make('year_id')
+                    ->label('Ano Letivo')
+                    ->relationship('year', 'year')
                     ->required(),
             ]);
     }
@@ -71,48 +99,74 @@ class LessonResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image'),
-                Tables\Columns\TextColumn::make('code')
+                ImageColumn::make('image')
+                    ->label('Capa'),
+                TextColumn::make('code')
+                    ->label('Código Único')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('title')
+                    ->label('Título')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('tags')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('lesson_date')
-                    ->date()
+                TextColumn::make('slug')
+                    ->label('Slug')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (Lesson $lesson) => match ($lesson->status) {
+                        'PUBLICADO' => 'success',
+                        'RASCUNHO' => 'warning',
+                        'PENDENTE' => 'danger',
+                    })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('tags')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('lesson_date')
+                    ->date(format: 'd/m/Y')
+                    ->sortable(),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('author_id')
+                TextColumn::make('author_id')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('grade.title')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('grade.title')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('year.id')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('year.id')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Excluir'),
+
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    Tables\Actions\ExportBulkAction::make(),
+                ])->label('Ações em Massa'),
             ]);
     }
 

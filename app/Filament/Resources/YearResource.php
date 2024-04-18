@@ -71,6 +71,7 @@ class YearResource extends Resource
             ->columns(array(
                 TextColumn::make('year')
                     ->label('Ano Letivo')
+                    ->sortable()
                     ->searchable(),
                 IconColumn::make('current_year')
                     ->label('Ano Corrente')
