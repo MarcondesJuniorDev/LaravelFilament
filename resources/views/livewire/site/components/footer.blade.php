@@ -1,5 +1,5 @@
 <div>
-    <footer class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+    <footer class="bg-blue-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200">
         <div class="mx-auto max-w-screen-xl px-4 pb-6 pt-16 sm:px-6 lg:px-8">
             <div class="lg:flex lg:items-center lg:justify-between">
                 <div class="flex justify-center text-teal-600 sm:justify-start dark:text-teal-300">

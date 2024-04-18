@@ -1,5 +1,5 @@
-<div class="bg-gray-100 dark:bg-gray-700 font-sans m-0 mb-4">
-    <div class="bg-gray-100 dark:bg-gray-800 shadow-md">
+<div>
+    <div class="bg-blue-50 dark:bg-slate-800 shadow-md">
         <div class="w-full container px-2">
             <div class="hidden lg:flex lg:items-center justify-between py-3">
                 <div class="hidden lg:flex lg:items-center">
@@ -8,10 +8,10 @@
                 <div class="hidden lg:flex lg:items-center">
                     <a href="{{ route('home') }}" class="text-gray-800 dark:text-gray-200 text-sm font-semibold hover:text-blue-600 mr-4">Início</a>
                     @livewire('site.components.dropdown', ['title' => 'Quem Somos', 'options' => ['Histórico' => 'about.history', 'Projetos' => 'about.projects', 'Organograma Institucional' => 'about.orgchart', 'Parceiros' => 'about.partners']])
-                    @livewire('site.components.dropdown', ['title' => 'Aulas', 'options' => ['Ensino Fundamental' => 'home', 'Ensino Médio' => 'home', 'EJA' => 'home']])
+                    @livewire('site.components.dropdown', ['title' => 'Aulas', 'options' => ['Ensino Fundamental' => 'lessons.elementary', 'Ensino Fundamental - EJA' => 'lessons.adult.elementary', 'Ensino Médio' => 'lessons.highschool', 'Ensino Médio - EJA' => 'lessons.adult.high']])
                     @livewire('site.components.dropdown', ['title' => 'Premiações', 'options' => ['Prêmio 01' => 'home', 'Prêmio 02' => 'home', 'Prêmio 03' => 'home', 'Prêmio 04' => 'home']])
-                    @livewire('site.components.dropdown', ['title' => 'Fique por dentro', 'options' => ['Notícias' => 'home', 'Eventos' => 'home', 'Publicações' => 'home']])
-                    <a href="#" class="text-gray-800 dark:text-gray-200 text-sm font-semibold hover:text-blue-600">Entre em contato</a>
+                    @livewire('site.components.dropdown', ['title' => 'Fique por dentro', 'options' => ['Notícias' => 'stayin.news', 'Eventos' => 'stayin.events', 'Publicações' => 'stayin.publications']])
+                    <a href="{{ route('contact') }}" class="text-gray-800 dark:text-gray-200 text-sm font-semibold hover:text-blue-600">Entre em contato</a>
                 </div>
                 <div class="hidden lg:flex lg:items-center">
                     @if(!Auth::check())

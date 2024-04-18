@@ -30,13 +30,13 @@
 <body class="font-sans antialiased">
     <div class="min-h-full bg-gray-100 dark:bg-gray-900">
         <!-- navigation -->
-        @livewire('site.principal.partials.navigation')
+        @livewire('site.components.navigation')
         <!-- /navigation -->
 
         {{ $slot }}
     </div>
     <!-- footer -->
-    @livewire('site.principal.partials.footer')
+    @livewire('site.components.footer')
     <!-- /footer -->
 
     <!-- Main Script -->
